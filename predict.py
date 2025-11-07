@@ -1,8 +1,8 @@
-from name_dataset import lang2label, name2tensor
+from ner_dataset import lang2label, name2tensor
 import torch
 from pathlib import Path
-from rnn import RNNmodel
-from name_dataset import num_langs, num_letters
+from BiLSTM import BiLSTM
+from ner_dataset import num_chars, num_labels
 
 
 def model_predict(model, name: str):
@@ -19,7 +19,12 @@ def model_predict(model, name: str):
 if __name__ == "__main__":
     # load model
     FILE = Path(__file__).parent / "model.pth"
-    model = RNNmodel(input_size=num_letters, hidden_size=256, output_size=num_langs)
+    model = BiLSTM(
+        vocab_size=num_chars,
+        embed_size=128,
+        hidden_size=128,
+        output_size=num_labels,
+    )
     model.load_state_dict(torch.load(FILE))
 
     # Model predict
