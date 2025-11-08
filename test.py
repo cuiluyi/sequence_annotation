@@ -8,6 +8,12 @@ from torch.utils.data import DataLoader
 
 from BiLSTM import BiLSTM
 from ner_dataset import NERDataset, num_chars, num_labels
+from constants import (
+    EMBED_SIZE,
+    HIDDEN_SIZE,
+    BATCH_SIZE,
+    TEST_DATA_FILE,
+)
 
 
 def model_test(model: nn.Module, test_loader: DataLoader):
@@ -47,27 +53,31 @@ def model_test(model: nn.Module, test_loader: DataLoader):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument(
-        "--model-path",
+        "--model_path",
         type=str,
         help="Path to the trained model checkpoint",
     )
     args = parser.parse_args()
 
-    FILE = Path(args.model_path)
+    model_path = Path(args.model_path)
     model = BiLSTM(
         vocab_size=num_chars,
-        embed_size=128,
-        hidden_size=128,
+        embed_size=EMBED_SIZE,
+        hidden_size=HIDDEN_SIZE,
         output_size=num_labels,
     )
-    model.load_state_dict(torch.load(FILE))
+    model.load_state_dict(torch.load(model_path))
 
     # test dataset
-    test_data_file = Path("data/test.txt")
+    test_data_file = Path(TEST_DATA_FILE)
     test_dataset = NERDataset(test_data_file)
 
-    # test dataloader: batch_size=1 for simplicity (avoid padding and truncating)
-    test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=True)
+    # test dataloader
+    test_loader = DataLoader(
+        dataset=test_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=True,
+    )
 
     # Model test
     model_test(model, test_loader)

@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "debugpy>=1.8.17",
     "loguru>=0.7.3",
     "numpy>=2.2.6",
     "scikit-learn>=1.7.2",

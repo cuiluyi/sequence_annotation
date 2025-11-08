@@ -8,6 +8,15 @@ from loguru import logger
 
 from BiLSTM import BiLSTM
 from ner_dataset import NERDataset, num_chars, num_labels
+from constants import (
+    EMBED_SIZE,
+    HIDDEN_SIZE,
+    BATCH_SIZE,
+    NUM_EPOCHS,
+    LEARNING_RATE,
+    SAVE_DIR,
+    TRAIN_DATA_FILE,
+)
 
 
 def model_train(
@@ -23,7 +32,7 @@ def model_train(
         for i, (inputs, labels) in enumerate(train_loader):
             inputs = inputs.to(device)
             labels = labels.to(device)
-            
+
             loss, preds = model(inputs, labels)
 
             optimizer.zero_grad()
@@ -45,31 +54,35 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # train dataset
-    train_data_file = Path("data/train.txt")
+    train_data_file = Path(TRAIN_DATA_FILE)
     train_dataset = NERDataset(train_data_file)
 
-    # train dataloader: batch_size=1 for simplicity (avoid padding and truncating)
-    train_loader = DataLoader(dataset=train_dataset, batch_size=1, shuffle=True)
+    # train dataloader
+    train_loader = DataLoader(
+        dataset=train_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=True,
+    )
 
     # model
     model = BiLSTM(
         vocab_size=num_chars,
-        embed_size=128,
-        hidden_size=128,
+        embed_size=EMBED_SIZE,
+        hidden_size=HIDDEN_SIZE,
         output_size=num_labels,
     ).to(device)
 
     # model train
     criterion = nn.CrossEntropyLoss()
-    optimizer = Adam(model.parameters(), lr=0.001)
+    optimizer = Adam(model.parameters(), lr=LEARNING_RATE)
 
-    save_dir=Path("ckpts/")
+    save_dir = Path(SAVE_DIR)
     save_dir.mkdir(parents=True, exist_ok=True)
 
     model = model_train(
         model,
         train_loader,
         optimizer,
-        num_epochs=10,
-        save_dir=Path("ckpts/"),
+        num_epochs=NUM_EPOCHS,
+        save_dir=save_dir,
     )
