@@ -1,19 +1,22 @@
-from ner_dataset import lang2label, name2tensor
+from ner_dataset import char2id, tag2label
 import torch
 from pathlib import Path
 from BiLSTM import BiLSTM
 from ner_dataset import num_chars, num_labels
 
 
-def model_predict(model, name: str):
-    label2lang = {label.item(): lang for lang, label in lang2label.items()}
+def sentence2tensor(sentence: str) -> torch.Tensor:
+    indices = [char2id[char] for char in sentence if char in char2id]
+    return torch.tensor(indices)
+
+
+def model_predict(model, sentence: str):
+    label2tag = {label.item(): tag for tag, label in tag2label.items()}
     model.eval()
     with torch.no_grad():
-        # input shape: (batch_size, seq, input_size)
-        name = name2tensor(name).unsqueeze(0)
-        output = model(name)
-        pred = torch.argmax(output, dim=-1)
-    return label2lang[pred.item()]
+        inputs = sentence2tensor(sentence).unsqueeze(0)  # (batch_size, seq)
+        preds = model(inputs)
+    return [label2tag[pred.item()] for pred in preds[0]]
 
 
 if __name__ == "__main__":

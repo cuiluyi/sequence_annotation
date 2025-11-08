@@ -22,7 +22,7 @@ class BiLSTM(nn.Module):
         self.linear = nn.Linear(hidden_size * 2, output_size)
         self.crf = CRF(output_size, batch_first=True)
 
-    def forward(self, x, tags):
+    def forward(self, x, labels=None):
         """
         x: (batch_size, seq_len)
         tags: (batch_size, seq_len)
@@ -31,6 +31,8 @@ class BiLSTM(nn.Module):
         x, _ = self.lstm(x)  # (batch_size, seq_len, hidden_size*2)
         x = self.linear(x)  # (batch_size, seq_len, output_size)
         preds = torch.tensor(self.crf.decode(x))  # (batch_size, seq_len)
-        loss = -1 * self.crf(x, tags, reduction="token_mean")  # ()
-
-        return loss, preds
+        if labels is None:
+            return preds
+        else:
+            loss = -1 * self.crf(x, labels, reduction="token_mean")  # ()
+            return loss, preds

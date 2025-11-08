@@ -18,8 +18,7 @@ def model_test(
     model.eval()
     with torch.no_grad():
         for inputs, labels in test_loader:
-            _, preds = model(inputs, labels)
-
+            preds = model(inputs)
             num_correct += (preds == labels).sum().item()
 
     print(f"Accuracy: {num_correct / len(test_dataset) * 100:.4f}%")
