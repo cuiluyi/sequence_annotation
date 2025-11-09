@@ -35,7 +35,7 @@ $$P_i = \text{softmax}(\tanh(W_c [F(h_i), B(h_i)]))$$
 $$s(X,y) = \sum_{i=0}^{L} A_{y_i,y_{i+1}} + \sum_{i=1}^{L} P_{i,y_i}$$
      
    - Viterbi algorithm for optimal label sequence prediction: 
-$$y^* = \argmax_{\tilde{y} \in Y_X} s(X,\tilde{y})$$
+$$y^* = \arg \mathop{\max}\limits_{\tilde{y} \in Y_X} s(X,\tilde{y})$$
    
 4. **Training Objective**  
    Cross-entropy loss with joint optimization of:  
