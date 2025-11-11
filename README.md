@@ -1,3 +1,4 @@
+
 # BiLSTM-CRF Chinese NER
 
 A Chinese Named Entity Recognition (NER) model implementation using BiLSTM + CRF architecture, with character-level input processing and sequence labeling optimization.
